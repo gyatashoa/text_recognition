@@ -30,6 +30,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   image_picker: ^0.8.2
   google_ml_kit: ^0.7.0
+  bottom_navy_bar: ^6.0.0
+  syncfusion_flutter_pdf: ^19.2.49-beta
+  path_provider: ^2.0.2
+  open_file: ^3.2.1
 
 dev_dependencies:
   flutter_test:
