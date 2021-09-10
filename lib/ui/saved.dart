@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -57,13 +58,23 @@ class _SavedState extends State<Saved> {
     return Container(
       child: files == null
           ? Center(
-              child: Text("No pdfs saved!"),
+              child: Column(
+                children: [
+                  Lottie.asset('assets/animations/empty.zip'),
+                  Text(
+                    "No Pdfs Saved!",
+                    style: TextStyle(fontSize: 22),
+                  )
+                ],
+              ),
             )
-          : ListView.builder(
+          : ListView.separated(
+              separatorBuilder: (ctx, i) => Divider(),
               itemBuilder: (_, i) {
                 var chunks = files![i].path.split("/");
                 String name = chunks.last;
                 return ListTile(
+                  leading: Icon(Icons.file_present),
                   title: Text(name),
                   onTap: () => onFilePressed(files![i]),
                 );

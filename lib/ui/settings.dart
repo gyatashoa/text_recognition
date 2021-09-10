@@ -11,7 +11,11 @@ class Settings extends StatelessWidget {
           ListTile(
             title: Text("About App"),
             onTap: () {
-              showAboutDialog(context: context);
+              showAboutDialog(
+                  context: context,
+                  applicationName: "Text Recognition",
+                  applicationVersion: "1.0.0",
+                  applicationIcon: FlutterLogo());
             },
           )
         ]),

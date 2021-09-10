@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:text_recognition/provider/loading_provider.dart';
 import 'package:text_recognition/ui/show_processed_text_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -47,16 +47,18 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  void processImage() async {
+  void processImage(LoadingProvider provider) async {
     if (currentPath == null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("No Image Selected!")));
       return;
     }
     try {
+      provider.setLoading = true;
       final inputImage = InputImage.fromFilePath(currentPath!);
       final textDetector = GoogleMlKit.vision.textDetector();
       final recognisedText = await textDetector.processImage(inputImage);
+      provider.setLoading = false;
       Navigator.of(context).push(MaterialPageRoute(builder: (_) {
         return ShowProcessedText(recognisedText);
       }));
@@ -86,15 +88,51 @@ class _HomePageState extends State<HomePage> {
                     : Image.memory(currentImage!),
               ),
             ),
-            TextButton(
-                onPressed: getImageFromGallery,
-                child: Text("Get Image from Gallery")),
-            TextButton(
-                onPressed: getImageFromCamera,
-                child: Text("Get Image from Camera")),
-            TextButton(onPressed: reset, child: Text("Reset")),
-            TextButton(onPressed: processImage, child: Text("Process Image"))
+            Expanded(child: Container()),
+            _Btn(
+              getImageFromGallery,
+              context,
+              text: "Get Image from Gallery",
+            ),
+            _Btn(
+              getImageFromCamera,
+              context,
+              text: "Get Image from Gallery",
+            ),
+            _Btn(
+              reset,
+              context,
+              text: "Reset",
+            ),
+            Consumer<LoadingProvider>(builder: (_, provider, widget) {
+              return _Btn(() => processImage(provider), context,
+                  text: "Process Image");
+            }),
+            SizedBox(
+              height: 20,
+            )
           ],
         ));
   }
+}
+
+class _Btn extends Padding {
+  final VoidCallback func;
+  final String text;
+  final BuildContext context;
+  _Btn(
+    this.func,
+    this.context, {
+    this.text = "",
+  }) : super(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+              width: MediaQuery.of(context).size.width,
+              child: TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                  onPressed: func,
+                  child: Text(text, style: TextStyle(color: Colors.white)))),
+        );
 }
